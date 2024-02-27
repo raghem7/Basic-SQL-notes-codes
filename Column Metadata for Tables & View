@@ -1,0 +1,18 @@
+Column metadata for Table and Views ( table and view column metadata change is done in IMPALA)
+
+TABLE
+
+ALTER TABLE db.table_name
+ALTER COLUMN ID SET COMMENT "Allegation ID";
+ALTER TABLE db.table_name
+ALTER COLUMN name SET COMMENT "name of the person";
+ALTER TABLE db.table_name
+ALTER COLUMN address SET COMMENT "address of the person";
+
+
+VIEW (repeating alter view is not needed here)
+
+ALTER VIEW DB.VW_NAME
+ID  COMMENT  "Allegation ID",
+name   COMMENT  "name of the person",
+Address  COMMENT  "address of the person";
