@@ -1,0 +1,2 @@
+SELECT * from TABLE/VIEW_NAME
+where date_cOLUMN >= now() - interval 12 MONTHS;
