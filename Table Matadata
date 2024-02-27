@@ -1,0 +1,12 @@
+
+ALTER VIEW DB.TBLE_NAME
+SET
+TBLPROPERTIES(
+--- CDP Mandatory Metadata minimums ---
+'COMMENT'='View to retrieve the latest allocation for each Allocation ID.',
+'CDP_MANAGED'='FALSE',
+'LOAD_FREQUENCY'='Daily, weekly,...',
+'SECURITY_CLASSIFICATION'='CONFIDENTIAL - HIGHLY RESTRICTED',
+'SOURCE'='db or navex',
+'CONTACT_INFO'='owner')
+;
