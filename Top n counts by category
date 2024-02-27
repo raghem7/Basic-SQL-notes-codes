@@ -1,0 +1,4 @@
+SELECT country,  count(DINTINCT(cases)) counts from table_name
+GROUP BY country
+ORDER BY counts DESC 
+LIMIT 20
