@@ -45,12 +45,8 @@ SELECT 	OL.*,
 			ELSE country
 		END AS country_new,
 		CASE
-			WHEN group_name_new IN("CQN", "CAN") THEN "ANH"
-			WHEN group_name_new IN("OT", "CASC AP", "CASC EMEA", "CASC SA", "CASC NA") THEN "CASC"
-			WHEN group_name_new IN("CBI","CCC", "CFB EMEA", "CFB APAC", "CFB Americas", "CSST", "Geos") THEN "CFB"
-			WHEN group_name_new IN("BOSC", "CBS", "Corporate", "CPT", "Law", "Global IT", "HR") THEN "Corporate"
-			WHEN group_name_new IN("CPLA", "CPNA", "CPAE", "Salt") THEN "CPS"
-			WHEN group_name_new IN("Metals", "CMR", "TCM", "Other") THEN "Other"
+			WHEN group_name_new IN("ABC", "DE") THEN "ANH"
+			WHEN group_name_new IN("AAA", "OO") THEN "CASC"
 			ELSE "UNKNOWN"
 		END AS enterprise,
 		CASE
@@ -66,7 +62,7 @@ SELECT 	OL.*,
 			ELSE "UNKNOWN"
 		END AS region_new, 
 		tmp_groups.group_name_new
-FROM 	prd_product_law_ethics.openline_data OL
+FROM 	DB.TABLE_NAME OL
 JOIN 	tmp_groups on OL.case_number= tmp_groups.case_number
 WHERE 	(assigned_tier NOT LIKE '%SMR%' AND assigned_tier NOT LIKE '%GSD%')
 AND 	OL.primary_outcome <> "Duplicate"
