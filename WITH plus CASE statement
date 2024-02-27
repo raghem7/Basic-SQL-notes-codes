@@ -1,0 +1,72 @@
+Project: Ethics Openline data standardization
+Created by: Mohamed Raghe
+**************************************
+UPDATES: 
+    12/04/2023 - MR- temp table containing standardized openline data
+*/
+
+
+WITH tmp_groups AS 
+    (
+    SELECT  distinct case_number,
+			CASE 
+				WHEN name LIKE "%ANH%" THEN "CAN"
+				WHEN name LIKE "%Animal%" THEN "CAN"
+				
+		   ELSE "UNKNOWN"
+		   END AS group_name_new 
+   FROM prd_product_law_ethics.openline_data
+   )
+   
+SELECT 	OL.*,
+		CASE
+			WHEN country = "C&ocirc;te d'Ivoire" THEN "Cote d'Ivoire"
+			WHEN country = "US" THEN "United States"
+			WHEN country = "UNITED STATES" THEN "United States"
+			WHEN country = "CHINA" THEN "China"
+			WHEN country = "CANADA" THEN "Canada"
+			WHEN country = "Armenia Azerbaijan" THEN "Armenia"
+			WHEN country = "MEXICO" THEN "Mexico"
+			WHEN country = "Brasil" THEN "Brazil"
+			WHEN country = "Viet Nam" THEN "Vietnam"
+			WHEN country = "M&eacute;xico" THEN "Mexico"
+			WHEN country = "C&ocirc;te d&rsquo;Ivoire" THEN "Cote d'Ivoire"
+			WHEN country = "United States of America" THEN "United States"
+			WHEN country = "Korea Republic of" THEN "Korea"
+			WHEN country = "Bolivia Plurinational State of" THEN "Bolivia"
+			WHEN country = "North America" THEN "Canada"
+			WHEN country = "USA" THEN "United States"
+			WHEN country = "NE" THEN "United States"
+			WHEN country = "The Netherlands" THEN "Netherlands"
+			WHEN country = "Venezuela Bolivarian Republic of" THEN "Venezuela"
+			WHEN country = "South Korea" THEN "Korea"
+			WHEN country = "Armenia; Azerbaijan" THEN "Armenia"
+			WHEN country = "Shandong China" THEN "China"
+			ELSE country
+		END AS country_new,
+		CASE
+			WHEN group_name_new IN("CQN", "CAN") THEN "ANH"
+			WHEN group_name_new IN("OT", "CASC AP", "CASC EMEA", "CASC SA", "CASC NA") THEN "CASC"
+			WHEN group_name_new IN("CBI","CCC", "CFB EMEA", "CFB APAC", "CFB Americas", "CSST", "Geos") THEN "CFB"
+			WHEN group_name_new IN("BOSC", "CBS", "Corporate", "CPT", "Law", "Global IT", "HR") THEN "Corporate"
+			WHEN group_name_new IN("CPLA", "CPNA", "CPAE", "Salt") THEN "CPS"
+			WHEN group_name_new IN("Metals", "CMR", "TCM", "Other") THEN "Other"
+			ELSE "UNKNOWN"
+		END AS enterprise,
+		CASE
+			WHEN region = "Latin America" THEN "LATAM"
+			WHEN region = "CPLA" THEN "LATAM"
+			WHEN region = "North America" THEN "NA"
+			WHEN region = "Africa" THEN "EMEA"
+			WHEN region = "EMEA" THEN "EMEA"
+			WHEN region = "LATAM" THEN "LATAM"
+			WHEN region = "APAC" THEN "APAC"
+			WHEN region = "" AND country = "United States" THEN "APAC"
+			WHEN region = "Asia Pacific" THEN "APAC"
+			ELSE "UNKNOWN"
+		END AS region_new, 
+		tmp_groups.group_name_new
+FROM 	prd_product_law_ethics.openline_data OL
+JOIN 	tmp_groups on OL.case_number= tmp_groups.case_number
+WHERE 	(assigned_tier NOT LIKE '%SMR%' AND assigned_tier NOT LIKE '%GSD%')
+AND 	OL.primary_outcome <> "Duplicate"
