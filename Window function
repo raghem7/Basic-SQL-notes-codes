@@ -105,3 +105,130 @@ SELECT * from (
         end slaary_range
         
         from table_name e;
+
+
+---FIRST_VALUE()
+
+-- Write a quary to display the most expensive product under each category(corresponding to each record)
+
+SELECT *,
+first_value(product_name) over ( PARTITION BY category ORDER BY price DESC) as most_expensive_product
+
+from table;
+
+
+---LAST_VALUE()
+
+-- Write a quary to display the least expensive product under each category(corresponding to each record)
+
+
+SELECT *,
+last_value(product_name) over ( PARTITION BY category ORDER BY price DESC) as most_expensive_product
+
+from table;
+
+---OR COMPARE BOTH LEAST AND MOST EXPENSIVE RESULT IN ONE CALL
+
+
+SELECT *,
+first_value(product_name) over ( PARTITION BY category ORDER BY price DESC) as most_expensive_product,
+last_value(product_name) over ( PARTITION BY category ORDER BY price DESC) as least_expensive_product
+
+from table;
+
+---- above comparison will not work due to the need of Frame Clause() -> let's check it 
+
+--- Frame Clause()
+
+SELECT *,
+    first_value(product_name) over ( PARTITION BY category ORDER BY price DESC) as most_expensive_product,
+    last_value(product_name) over ( PARTITION BY category ORDER BY price DESC
+    RANGE BETWEEN UNBOUNDED PRECEDING and UNBOUNDED FOLLOWING) as least_expensive_product
+    
+    from table;
+    
+    ---Alternate way of using Last_value() or First_value() window functions
+    
+    
+SELECT *,
+    first_value(product_name) over w as most_expensive,
+    last_value(product_name) over w as least_expensive
+    from table_name
+    WINDOW w as (partition by category order by price desc
+    range betwween unbounded preceding and unbounded following);
+    
+    
+    
+    -NTH_VALUE()
+    
+    ----Can fetch from any declared position 
+    SELECT *,
+    first_value(product_name) over w as most_expensive,
+    last_value(product_name) over w as least_expensive,
+    nth_value(product_name, 2) over w as second_most_expensive,
+    from table_name
+    WINDOW w as (partition by category order by price desc
+    range betwween unbounded preceding and unbounded following);
+    
+    
+     --- NTILE_VALUE()   -> can be used to group your data together with in a partion and then place it in certain bocket.
+     
+     --- write a query that sagregates all the" expensive phones, mid_range phones, and cheaper phones.
+     
+    SELECT *,
+    ntile(3) over(ORDER BY price DESC) as buckets 
+    from table_name
+    where category ="Phone"
+    
+    ---- more cleaner
+    
+    select product_name,
+    case when x.buckets =1 then "expensive phones"
+        when x.buckets =2 then "mid_range phones"
+        when x.buckets =3 then "cheaper phones"
+        end phone_category
+    from
+    (
+     SELECT *,
+    ntile(3) over(ORDER BY price DESC) as buckets 
+    from table_name
+    where category ="Phone") x
+  ;
+  
+  
+  ---CUME_DIST()  -> returns the cumulative distribution of the given value
+  
+  ---- FORMULA= Current_row#/Total# of rows
+  
+  ---fetch all products which are equal to the first 30% of the product data based on price
+  SELECT product_name, (cum_dist_percentage ||'%') as cum_dist_percentage
+  from
+  (SELECT *,
+  cume_dist() over (ORDER BY price DESC) as cum_distribution,
+  round(cum_dist() over (ORDER BY price DESC) ::numberic *100, 2) as cum_dist_percentage
+  from table_name) x
+  where x.cum_dist_percentage <=30;
+  
+  ---PERCENT_RANK()
+  
+  ----FORMULA= Current_row# - 1 /Total# of rows - 1
+  
+  -- query to identify how much more expensive is 'product z Fold 3' when compared to all other prodcts in percentage
+  
+   SELECT *,
+  percent_rank() over (ORDER BY price DESC) as percen_tank,
+  round(percent_rank() over (ORDER BY price DESC) ::numberic *100, 2) as percent_rank_percentage
+  from table_name;
+  
+  --- more cleaner with subquery
+  SELECT product_name, percent_rank_percentage
+   from
+      ( SELECT *,
+      percent_rank() over (ORDER BY price DESC) as percen_tank,
+      round(percent_rank() over (ORDER BY price DESC) ::numberic *100, 2) as percent_rank_percentage
+      from table_name) x
+      where product_name = "product z Fold 3");
+
+
+
+
