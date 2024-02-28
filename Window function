@@ -1,0 +1,107 @@
+--- window function cheat
+
+--- max employee salary from all departments
+
+SELECT e.*, 
+max(salary) over () as max_salary from db.table_name e;
+
+
+--- max employee salary for each departments (one window for each dept)
+
+SELECT e.*, 
+max(salary) over (PARTITION BY department_name) as max_salary from db.table_name e;
+
+--- row_number()
+-- create unique row number for each row in the table
+
+SELECT e.*, 
+row_number() over () as rn from db.table_name e;
+
+
+--- row_number()
+
+-- create unique row number for each department_name
+
+SELECT e.*, 
+row_number() over (PARTITION BY department_name) as rn from db.table_name e;
+
+
+--- first two employees who joined the company from each department
+
+SELECT * from (
+    SELECT e.*, 
+    row_number() over (PARTITION BY department_name ORDER BY emp_id) as rn
+    from db.table_name e) x
+    
+    WHERE x.rn < 3;
+
+
+--- RANK()
+
+-- top three employees who earn the max salary each of the department
+
+
+SELECT e.*, 
+rank() over (PARTITION BY department_name ORDER BY salary DESC) as rnk
+from db.table_name e;
+
+-- top three employees who earn the max salary each of the department
+
+SELECT * from (
+    SELECT e.*, 
+    rank() over (PARTITION BY department_name ORDER BY salary DESC) as rnk
+    from db.table_name e) x
+    
+    WHERE x.rnk < 4;
+    
+    
+    
+-- DENSE_RANK() -- Dense rank doesn't skip duplicate value as the RANK -> Compare above and below examples
+
+-- top three employees who earn the max salary each of the department
+
+SELECT * from (
+    SELECT e.*, 
+    rank() over (PARTITION BY department_name ORDER BY salary DESC) as rnk,
+    dense_rank() over (PARTITION BY department_name ORDER BY salary DESC) as dens_rnk,
+    row_number() over (PARTITION BY department_name ORDER BY salary DESC) as rnk   # row# lists every row regardless of duplicate
+    from db.table_name e;
+    
+    
+    
+    --LAG()
+    
+    ---Chech if the current_employee salary is less than the previous employee
+    
+
+    SELECT e.*, 
+    lag(salary) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary
+    from table_name e;
+    
+    --- check two records above and write 0 in nothing existed before the 2
+    
+    SELECT e.*, 
+    lag(salary, 2, 0) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary
+    from table_name e;
+    
+    
+    --LEAD()
+    
+    
+     SELECT e.*, 
+    lead(salary) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary
+    from table_name e;
+    
+    
+     -- Fetch the salary of curent employee is higher, equal or less than the previous employee
+    
+    
+      SELECT e.*, 
+    lead(salary) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary,
+    
+    case when e.salary > lead(salary) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary then "Higher than previous salary"
+        when e.salary = lead(salary) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary then "equal to previous salary"
+        when e.salary < lead(salary) over (PARTITION BY department_name ORDER BY emp_id) as previous_salary then "Lower than previous salary"
+        end slaary_range
+        
+        from table_name e;
