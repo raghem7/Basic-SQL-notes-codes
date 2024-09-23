@@ -5,7 +5,8 @@ then upper case the column to join the two tables.
 
 
 
-SELECT *, SPLIT_PART(upper(x.COLUMN_NAME), ' ', 1) as RENAMED_COLUMN, SPLIT_PART(upper(y.COLUMN_NAME), ' ', 1) as RENAMED_COLUMN
+SELECT *, SPLIT_PART(upper(x.COLUMN_NAME), ' ', 1) as RENAMED_COLUMN, SPLIT_PART(upper(y.COLUMN_NAME), ' ', 1) 
+as RENAMED_COLUMN
 FROM DB.TABLE x
 RIGHT JOIN DB.TABLE2 y
 ON SPLIT_PART(upper(x.ID), ' ', 1) = SPLIT_PART(upper(y.ID), ' ',1);
