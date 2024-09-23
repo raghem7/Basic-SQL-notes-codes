@@ -1,5 +1,6 @@
 This is simple sql code to join two tables, one with all columns *, and take only one column from table2.
-Split column by delimiter (space delimiter) to choose only the first one word in the row, then upper case the column to join the two tables.
+Split column by delimiter (space delimiter) to choose only the first one word in the row,
+then upper case the column to join the two tables.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 
 
