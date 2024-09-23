@@ -4,12 +4,12 @@ Created by: Mohamed Raghe
 UPDATES: 
 @case statement with SUM, GROUP BY and ORDER BY
 
-		SELECT group_description, sum(round(fte_sum, 0)) headcounts,
+		SELECT group, sum(round(fte_sum, 0)) headcounts,
 	case 
 	    when sum(fte_sum)< 5000 then "small_sized_group" 
 	    when sum(fte_sum) BETWEEN 5001 and 10000 then "middle_sized_group" 
 	    else "big_sized_group"  
 	    end as Company_size
-	from prd_product_law_ethics.hr_employee_aggregates 
-	GROUP BY group_description
+	from DB.TABLE 
+	GROUP BY group
 	ORDER BY headcounts desc
