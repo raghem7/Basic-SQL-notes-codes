@@ -1,0 +1,9 @@
+---Rolling totals by year/month/etc.
+
+WITH cases_by_year AS (
+    SELECT YEAR(Date) AS `YEAR`, COUNT(DISTINCT case_number) AS cases
+    FROM table
+    GROUP BY YEAR(Date)
+)
+SELECT `YEAR`, cases, SUM(cases) OVER (ORDER BY `YEAR`) AS cases_by_year
+FROM cases_by_year;
