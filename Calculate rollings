@@ -5,5 +5,5 @@ WITH cases_by_year AS (
     FROM table
     GROUP BY YEAR(Date)
 )
-SELECT `YEAR`, cases, SUM(cases) OVER (ORDER BY `YEAR`) AS cases_by_year
+SELECT `YEAR`, cases, SUM(cases) OVER (ORDER BY `YEAR`) AS rolling_cases_by_year
 FROM cases_by_year;
