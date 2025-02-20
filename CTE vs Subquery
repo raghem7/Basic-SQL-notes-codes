@@ -1,0 +1,36 @@
+--- select those businessnames who have more case counts then the averages - using subquery  
+
+SELECT businessname, total_counts, count_averages
+FROM (
+    SELECT businessname, COUNT(ID) AS total_counts
+    FROM TABLE
+    GROUP BY businessname
+) AS counts,
+(
+    SELECT ROUND(AVG(total_counts), 0) AS count_averages
+    FROM (
+        SELECT COUNT(ID) AS total_counts
+        FROM TABLE
+        GROUP BY businessname
+    ) AS sub_counts
+) AS averages
+WHERE total_counts > count_averages;
+
+
+--- select those businessnames who have more case counts then the averages - using CTE
+
+WITH counts AS
+    (SELECT businessname, count(ID) as total_counts
+    FROM TABLE
+    GROUP BY businessname
+    ORDER BY total_counts DESC),
+averages AS
+    (SELECT ROUND(AVG(total_counts),0) AS count_averages FROM counts)
+        
+    SELECT * FROM counts JOIN averages
+    ON
+    counts.case_counts > averages.count_averages;
+
+
+    
+    
